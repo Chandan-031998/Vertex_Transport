@@ -8,31 +8,27 @@ import routes from "./routes/index.routes.js";
 
 const app = express();
 
-// If behind a reverse proxy (cPanel, nginx), keep this.
-// If not needed, it doesn't break.
 app.set("trust proxy", 1);
 
-// Security headers
 app.use(helmet());
 
-// ✅ CORS must come before routes
-const cors = corsMiddleware();
-app.use(cors);
-
-// ✅ IMPORTANT: handle preflight requests (always before routes)
-app.options("*", cors);
+// CORS MUST be first
+const corsMw = corsMiddleware();
+app.use(corsMw);
+app.options("*", corsMw);
 
 // Body parsers
-app.use(express.json({ limit: "10mb" })); // increased a bit for uploads
+app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-// Logs
 app.use(morgan("dev"));
 
-// Health check (quick test)
-app.get("/health", (req, res) => res.json({ ok: true }));
+// ✅ Health check (VERY useful for testing)
+app.get("/api/health", (req, res) => {
+  res.json({ ok: true, service: "vertex-transport-api", time: new Date().toISOString() });
+});
 
-// Routes
+// API routes
 app.use("/api", routes);
 
 // Errors
