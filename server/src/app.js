@@ -37,12 +37,48 @@ app.use(morgan("dev"));
  * Keep this BEFORE importing routes, so you can test serverless works
  * even if routes/db/env crash.
  */
+const healthPayload = () => ({
+  ok: true,
+  service: "vertex-transport-api",
+  time: new Date().toISOString(),
+  env: process.env.VERCEL ? "vercel" : "local",
+});
+
 app.get("/api/health", (req, res) => {
+  res.json(healthPayload());
+});
+
+// Also expose /health because some serverless mounts strip the /api prefix.
+app.get("/health", (req, res) => {
+  res.json(healthPayload());
+});
+
+// Guard common browser probes so they never crash a function invocation.
+app.get("/", (req, res) => {
+  res.status(404).json({ message: "Not found" });
+});
+
+app.get("/favicon.ico", (req, res) => {
+  res.status(204).end();
+});
+
+app.get("/favicon.png", (req, res) => {
+  res.status(204).end();
+});
+
+app.get("/favicon.svg", (req, res) => {
+  res.status(204).end();
+});
+
+app.get("/robots.txt", (req, res) => {
+  res.type("text/plain").send("User-agent: *\nDisallow:");
+});
+
+app.get("/api", (req, res) => {
   res.json({
     ok: true,
     service: "vertex-transport-api",
-    time: new Date().toISOString(),
-    env: process.env.VERCEL ? "vercel" : "local",
+    health: "/api/health",
   });
 });
 
