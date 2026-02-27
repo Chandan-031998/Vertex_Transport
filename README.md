@@ -64,3 +64,21 @@ npm run dev
 
 npm run db:init
 npm run db:seedadmin
+
+
+
+
+
+
+cd Vertex_Transport
+git init
+git remote add origin https://github.com/Chandan-031998/Vertex_Transport.git
+git add .
+git commit -m "Initial commit - Vertex Transport Manager"
+git branch -M main
+git push -u origin main
+
+
+git add .
+git commit -m "Updated project"
+git push
