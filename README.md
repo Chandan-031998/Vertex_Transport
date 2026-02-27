@@ -60,6 +60,50 @@ npm run dev
 - This is a clean scaffold with working Auth + RBAC middleware + sample modules for Fleet, Drivers, Trips (CRUD).
 - Phase-2 folders are included (tracking/geofence/vendors/brokers/compliance/integrations) with placeholder routes you can extend.
 
+## Render Deployment (Production)
+
+Deploy as two services:
+
+### 1) Backend (Render Web Service)
+- Root Directory: `server`
+- Build Command: `npm install`
+- Start Command: `npm start`
+- Health Check Path: `/api/health`
+
+Backend runtime entry is `server/src/server.js` and start script already points to it:
+- `start`: `node src/server.js`
+
+### 2) Frontend (Render Static Site)
+- Root Directory: `client`
+- Build Command: `npm install && npm run build`
+- Publish Directory: `dist`
+
+Set frontend env:
+- `VITE_API_BASE_URL=https://transport.vertexsoftware.in`
+
+### Required backend env vars
+- `NODE_ENV=production`
+- `TRUST_PROXY=1`
+- `DB_HOST=cpanel-sh117.webhostingservices.com`
+- `DB_PORT=3306`
+- `DB_USER=pixelfla_vertex_user`
+- `DB_PASSWORD=...`
+- `DB_NAME=pixelfla_vertex_transport_manager`
+- `JWT_SECRET=...`
+- `JWT_EXPIRES_IN=7d`
+- `SEED_ADMIN_NAME=Admin`
+- `SEED_ADMIN_EMAIL=admin@vertexsoftware.in`
+- `SEED_ADMIN_PASSWORD=admin123`
+- `CORS_ORIGINS=https://transport.vertexsoftware.in,http://localhost:5173,http://127.0.0.1:5173`
+- `UPLOAD_DIR=uploads`
+- `MAX_UPLOAD_MB=10`
+
+### Why this setup works
+- Backend does not run Vite during build.
+- Backend listens on `process.env.PORT || 4000`.
+- Upload directory creation is safe and falls back to `/tmp/uploads` if needed.
+- CORS supports comma-separated origins with trim + trailing slash normalization.
+
 
 
 npm run db:init

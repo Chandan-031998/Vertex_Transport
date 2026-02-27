@@ -11,6 +11,7 @@ export const env = {
   DB_NAME: process.env.DB_NAME || "vertex_transport_manager",
   JWT_SECRET: process.env.JWT_SECRET || "change_me",
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || "7d",
-  // Runtime upload path: use /tmp for serverless compatibility.
-  UPLOAD_DIR: process.env.UPLOAD_DIR || "/tmp/uploads",
+  CORS_ORIGINS: process.env.CORS_ORIGINS || "",
+  UPLOAD_DIR: process.env.UPLOAD_DIR || "uploads",
+  MAX_UPLOAD_MB: Number(process.env.MAX_UPLOAD_MB || 10),
 };

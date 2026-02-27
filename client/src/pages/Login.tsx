@@ -57,7 +57,7 @@ export default function Login() {
             </form>
 
             <div className="mt-4 text-xs text-slate-500">
-              API should run on <code>http://localhost:4000</code>. Update <code>VITE_API_BASE</code> if needed.
+              API should run on <code>http://localhost:4000</code>. Update <code>VITE_API_BASE_URL</code> if needed.
             </div>
           </Card>
         </div>

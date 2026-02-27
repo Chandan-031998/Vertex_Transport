@@ -4,29 +4,39 @@ import fs from "fs";
 import { env } from "../config/env.js";
 
 function ensureDir(p) {
-  fs.mkdirSync(p, { recursive: true });
+  try {
+    fs.mkdirSync(p, { recursive: true });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function resolveUploadRoot() {
-  // Vercel serverless filesystem is read-only except /tmp.
-  if (process.env.VERCEL) return "/tmp/uploads";
-  if (!env.UPLOAD_DIR) return "/tmp/uploads";
-  if (path.isAbsolute(env.UPLOAD_DIR)) return env.UPLOAD_DIR;
-  // Keep local behavior configurable but still avoid writing into source dirs by default.
-  return path.join("/tmp", env.UPLOAD_DIR);
+  const configured = String(env.UPLOAD_DIR || "uploads");
+  const primary = path.isAbsolute(configured) ? configured : path.join(process.cwd(), configured);
+  if (ensureDir(primary)) return primary;
+  const fallback = "/tmp/uploads";
+  ensureDir(fallback);
+  return fallback;
 }
 
 export function makeUploader(subdir) {
   const root = resolveUploadRoot();
   const dir = path.join(root, subdir);
-  ensureDir(dir);
+  if (!ensureDir(dir)) {
+    const fallbackDir = path.join("/tmp/uploads", subdir);
+    ensureDir(fallbackDir);
+  }
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
       try {
-        ensureDir(dir);
-        cb(null, dir);
+        if (ensureDir(dir)) return cb(null, dir);
+        const fallbackDir = path.join("/tmp/uploads", subdir);
+        ensureDir(fallbackDir);
+        return cb(null, fallbackDir);
       } catch (err) {
-        cb(err);
+        return cb(err);
       }
     },
     filename: (req, file, cb) => {
@@ -34,5 +44,8 @@ export function makeUploader(subdir) {
       cb(null, Date.now() + "_" + safe);
     },
   });
-  return multer({ storage });
+  return multer({
+    storage,
+    limits: { fileSize: Number(env.MAX_UPLOAD_MB || 10) * 1024 * 1024 },
+  });
 }

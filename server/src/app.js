@@ -3,12 +3,15 @@ import helmet from "helmet";
 import morgan from "morgan";
 
 import { corsMiddleware } from "./config/cors.js";
+import { env } from "./config/env.js";
 import { notFound, errorHandler } from "./middleware/error.middleware.js";
 import routes from "./routes/index.routes.js";
 
 const app = express();
 
-app.set("trust proxy", 1);
+if (String(env.TRUST_PROXY || "0") === "1") {
+  app.set("trust proxy", 1);
+}
 
 app.use(helmet());
 
