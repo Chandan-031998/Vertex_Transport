@@ -1,13 +1,7 @@
 import axios from "axios";
 
-const rawBase = import.meta.env.VITE_API_BASE;
-
-if (!rawBase) {
-  // Fail fast so you don't ship a build that points to localhost or wrong URL
-  throw new Error("VITE_API_BASE is missing. Set it in client/.env and rebuild.");
-}
-
-const baseURL = rawBase.replace(/\/$/, ""); // remove trailing slash
+const rawBase = (import.meta.env.VITE_API_BASE || "/api").trim();
+const baseURL = rawBase.replace(/\/$/, "");
 
 export const http = axios.create({ baseURL });
 

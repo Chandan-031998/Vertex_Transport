@@ -7,9 +7,10 @@
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
     "db:init": "node src/database/runSchema.js",
-    "build": "echo \"No build step (Node runtime)\"",
+    "build": "vite build",
     "lint": "echo \"Add ESLint if needed\"",
     "db:seedadmin": "node src/database/seedAdmin.js"
+    
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -21,6 +22,7 @@
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.11.0",
+    "serverless-http": "^3.2.0",
     "zod": "^3.23.8"
   }
 }

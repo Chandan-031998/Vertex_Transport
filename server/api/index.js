@@ -1,4 +1,8 @@
-// server/api/index.js
+import serverless from "serverless-http";
 import app from "../src/app.js";
 
-export default app;
+const handler = serverless(app);
+
+export default function serverVercelHandler(req, res) {
+  return handler(req, res);
+}

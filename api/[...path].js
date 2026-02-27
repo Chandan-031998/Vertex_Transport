@@ -1,3 +1,8 @@
+import serverless from "serverless-http";
 import app from "../server/src/app.js";
 
-export default app;
+const handler = serverless(app);
+
+export default function vercelCatchAll(req, res) {
+  return handler(req, res);
+}

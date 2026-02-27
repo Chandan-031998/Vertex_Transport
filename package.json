@@ -6,6 +6,9 @@
     "client",
     "shared"
   ],
+  "dependencies": {
+    "serverless-http": "^3.2.0"
+  },
   "scripts": {
     "dev": "npm -w server run dev & npm -w client run dev",
     "build": "npm -w client run build && npm -w server run build",
