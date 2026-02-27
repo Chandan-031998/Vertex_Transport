@@ -1,0 +1,14 @@
+{
+  "name": "vertex-transport-manager",
+  "private": true,
+  "workspaces": [
+    "server",
+    "client",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "npm -w server run dev & npm -w client run dev",
+    "build": "npm -w client run build && npm -w server run build",
+    "lint": "npm -w server run lint && npm -w client run lint"
+  }
+}
