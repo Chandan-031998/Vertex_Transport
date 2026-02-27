@@ -7,6 +7,8 @@ function normalizeOrigin(v) {
 
 function parseAllowedOrigins() {
   const defaults = [
+    "https://webtransport.vertexsoftware.in",
+    "https://vertex-transport.onrender.com",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
   ];
@@ -27,7 +29,7 @@ export function corsMiddleware() {
       if (allowed.has(normalized)) return cb(null, true);
       return cb(null, false);
     },
-    credentials: false,
+    credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     maxAge: 86400,

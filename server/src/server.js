@@ -7,13 +7,9 @@ if (String(env.TRUST_PROXY || "0") === "1") {
   app.set("trust proxy", 1);
 }
 
-// Simple health checks (so you can test quickly)
-app.get("/health", (req, res) => res.status(200).json({ ok: true }));
-app.get("/api/health", (req, res) => res.status(200).json({ ok: true }));
+const PORT = Number(process.env.PORT || 4000);
 
-const PORT = Number(process.env.PORT || env.PORT || 4000);
-
-const server = app.listen(PORT, async () => {
+const server = app.listen(PORT, "0.0.0.0", async () => {
   let dbOk = false;
   try {
     dbOk = await pingDb();

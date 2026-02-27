@@ -26,6 +26,14 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(morgan("dev"));
 
+app.get("/", (req, res) => {
+  res.json({ status: "OK", service: "Vertex Transport API" });
+});
+
+app.get("/health", (req, res) => {
+  res.json({ ok: true });
+});
+
 // Health
 app.get("/api/health", (req, res) => {
   res.json({ ok: true, service: "vertex-transport-api", time: new Date().toISOString() });
