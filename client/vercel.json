@@ -1,0 +1,15 @@
+{
+  "routes": [
+    { "handle": "filesystem" },
+
+    {
+      "src": "/api/(.*)",
+      "dest": "https://vertex-transport.onrender.com/api/$1"
+    },
+
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
