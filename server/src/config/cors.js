@@ -1,37 +1,27 @@
 import cors from "cors";
 import { env } from "./env.js";
 
-function normalizeOrigin(v) {
-  return String(v || "").trim().replace(/\/+$/, "");
-}
-
-function parseAllowedOrigins() {
-  const defaults = [
-    "https://webtransport.vertexsoftware.in",
-    "https://vertex-transport.onrender.com",
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-  ];
-  const fromEnv = String(env.CORS_ORIGINS || "")
-    .split(",")
-    .map((x) => normalizeOrigin(x))
-    .filter(Boolean);
-  return new Set([...defaults, ...fromEnv]);
-}
-
-const allowed = parseAllowedOrigins();
-
 export function corsMiddleware() {
+  const allowed = [
+    "http://webtransport.vertexsoftware.in",
+    "https://webtransport.vertexsoftware.in",
+    "http://transport.vertexsoftware.in",
+    "https://transport.vertexsoftware.in",
+  ];
+
+  // allow localhost in dev
+  if (env.NODE_ENV !== "production") {
+    allowed.push("http://localhost:5173", "http://localhost:3000");
+  }
+
   return cors({
-    origin: (origin, cb) => {
-      if (!origin) return cb(null, true); // curl/Postman or same-origin
-      const normalized = normalizeOrigin(origin);
-      if (allowed.has(normalized)) return cb(null, true);
-      return cb(null, false);
+    origin(origin, cb) {
+      if (!origin) return cb(null, true); // allow server-to-server / curl
+      if (allowed.includes(origin)) return cb(null, true);
+      return cb(new Error("CORS blocked: " + origin), false);
     },
-    credentials: true,
+    credentials: false,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    maxAge: 86400,
   });
 }
