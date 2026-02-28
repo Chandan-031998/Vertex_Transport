@@ -22,15 +22,26 @@ function parseAllowedOrigins() {
   return new Set([...defaults, ...fromEnv]);
 }
 
+function isVercelPreviewOrigin(origin) {
+  try {
+    const host = new URL(origin).hostname.toLowerCase();
+    return host.endsWith(".vercel.app");
+  } catch {
+    return false;
+  }
+}
+
 export function corsMiddleware() {
   const allowed = parseAllowedOrigins();
 
   return cors({
     origin(origin, cb) {
-      if (!origin) return cb(null, true); // allow server-to-server / curl
+      if (!origin) return cb(null, true); // curl/health checks
       const normalized = normalizeOrigin(origin);
-      if (allowed.has(normalized)) return cb(null, true);
-      return cb(null, false);
+      if (allowed.has(normalized) || isVercelPreviewOrigin(normalized)) {
+        return cb(null, true);
+      }
+      return cb(new Error(`CORS blocked for origin: ${origin}`));
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
