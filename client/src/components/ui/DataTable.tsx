@@ -12,12 +12,12 @@ type DataTableProps = {
 export function DataTable({ headers, rows, mobileCards, emptyTitle, emptyMessage }: DataTableProps) {
   return (
     <>
-      <div className="hidden overflow-x-auto rounded-2xl border border-white/60 bg-white/80 shadow-sm md:block">
+      <div className="hidden overflow-x-auto rounded-2xl border border-white/40 bg-white/65 shadow-glass backdrop-blur-sm md:block dark:bg-slate-900/50">
         <table className="min-w-full text-sm">
-          <thead className="sticky top-0 z-10 border-b border-slate-100 bg-slate-50/90 backdrop-blur">
+          <thead className="sticky top-0 z-10 border-b border-slate-100 bg-slate-50/85 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/70">
             <tr>
               {headers.map((header) => (
-                <th key={header} className="px-4 py-3 text-left font-semibold text-slate-700">
+                <th key={header} className="px-4 py-3 text-left font-semibold text-slate-700 dark:text-slate-200">
                   {header}
                 </th>
               ))}

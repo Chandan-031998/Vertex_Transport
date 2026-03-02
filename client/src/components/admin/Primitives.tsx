@@ -18,8 +18,22 @@ export function Card({ title, children, actions }: { title: string; children: Re
   return <UiCard title={title} actions={actions}>{children}</UiCard>;
 }
 
-export function KpiCard({ label, value, delta }: { label: string; value: string; delta?: string }) {
-  return <UiKpiCard label={label} value={value} trend={delta} />;
+export function KpiCard({
+  label,
+  value,
+  delta,
+  trend,
+  tone,
+  icon,
+}: {
+  label: string;
+  value: string;
+  delta?: string;
+  trend?: string;
+  tone?: "default" | "success" | "warning" | "danger";
+  icon?: React.ReactNode;
+}) {
+  return <UiKpiCard label={label} value={value} trend={trend || delta} tone={tone} icon={icon} />;
 }
 
 export function FilterRow({ children }: { children: React.ReactNode }) {
@@ -35,7 +49,7 @@ export function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
 }
 
 export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  const variant = (props as any).variant === "primary" ? "primary" : "secondary";
+  const variant = (props as any).variant || "secondary";
   return <UiButton {...props} variant={variant} />;
 }
 

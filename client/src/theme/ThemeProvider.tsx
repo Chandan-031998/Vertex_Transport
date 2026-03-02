@@ -10,29 +10,34 @@ type ThemeState = {
   primary_color: string | null;
   secondary_color: string | null;
   ui_style: UiStyle;
+  dark_mode: boolean;
 };
 
 type ThemeCtx = {
   theme: ThemeState;
   setTheme: (patch: Partial<ThemeState>) => void;
   reloadTheme: () => Promise<void>;
+  toggleDarkMode: () => void;
 };
 
 const defaults: ThemeState = {
   brand_name: "Vertex Transport Manager",
   logo_url: null,
-  primary_color: "#2563eb",
-  secondary_color: "#1d4ed8",
-  ui_style: "CLASSIC",
+  primary_color: "#4f46e5",
+  secondary_color: "#06b6d4",
+  ui_style: "SOFT",
+  dark_mode: false,
 };
 
 const Ctx = createContext<ThemeCtx | null>(null);
 
 function applyThemeToDom(theme: ThemeState) {
   const root = document.documentElement;
-  root.style.setProperty("--brand", theme.primary_color || defaults.primary_color || "#2563eb");
-  root.style.setProperty("--brand-2", theme.secondary_color || defaults.secondary_color || "#1d4ed8");
-  root.dataset.uiStyle = String(theme.ui_style || "CLASSIC").toLowerCase();
+  root.style.setProperty("--brand", theme.primary_color || defaults.primary_color || "#4f46e5");
+  root.style.setProperty("--brand-2", theme.secondary_color || defaults.secondary_color || "#06b6d4");
+  root.dataset.uiStyle = String(theme.ui_style || "SOFT").toLowerCase();
+  if (theme.dark_mode) root.classList.add("dark");
+  else root.classList.remove("dark");
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
@@ -43,16 +48,31 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setThemeState((prev) => {
       const next = { ...prev, ...patch };
       applyThemeToDom(next);
+      localStorage.setItem("vertex-theme", JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const toggleDarkMode = () => {
+    setThemeState((prev) => {
+      const next = { ...prev, dark_mode: !prev.dark_mode };
+      applyThemeToDom(next);
+      localStorage.setItem("vertex-theme", JSON.stringify(next));
       return next;
     });
   };
 
   const reloadTheme = async () => {
+    const saved = localStorage.getItem("vertex-theme");
+    const savedTheme: Partial<ThemeState> = saved ? JSON.parse(saved) : {};
+
     if (!token) {
-      setThemeState(defaults);
-      applyThemeToDom(defaults);
+      const next = { ...defaults, ...savedTheme };
+      setThemeState(next);
+      applyThemeToDom(next);
       return;
     }
+
     try {
       const res = await http.get("/settings/theme");
       const data = res.data?.data || {};
@@ -61,13 +81,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         logo_url: data.logo_url || null,
         primary_color: data.primary_color || defaults.primary_color,
         secondary_color: data.secondary_color || defaults.secondary_color,
-        ui_style: (data.ui_style || "CLASSIC") as UiStyle,
+        ui_style: (data.ui_style || "SOFT") as UiStyle,
+        dark_mode: typeof savedTheme.dark_mode === "boolean" ? savedTheme.dark_mode : defaults.dark_mode,
       };
       setThemeState(next);
       applyThemeToDom(next);
+      localStorage.setItem("vertex-theme", JSON.stringify(next));
     } catch {
-      setThemeState(defaults);
-      applyThemeToDom(defaults);
+      const next = { ...defaults, ...savedTheme };
+      setThemeState(next);
+      applyThemeToDom(next);
     }
   };
 
@@ -76,7 +99,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
-  const value = useMemo(() => ({ theme, setTheme, reloadTheme }), [theme]);
+  const value = useMemo(() => ({ theme, setTheme, reloadTheme, toggleDarkMode }), [theme]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
